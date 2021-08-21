@@ -20,6 +20,7 @@ namespace NBodySim
 		private int Scale = 2;
 		private List<Body> Bodies;
 
+		private bool AllowCollisions = false;
 		private int RadiusInput = 10; // +-1
 		private int MassInput = 1000; // +-10
 		private Color ColorInput = Color.Coral;
@@ -91,6 +92,9 @@ namespace NBodySim
 				Scale = MathHelper.Max(1, Scale + (PreviousMouseState.ScrollWheelValue - mouseState.ScrollWheelValue) / 120);
 			}
 
+			if (keyboardState.IsKeyDown(Keys.C) && PreviousKeyboardState.IsKeyUp(Keys.C))
+				AllowCollisions = !AllowCollisions;
+
 			if (keyboardState.IsKeyDown(Keys.Add))
 				RadiusInput += 1;
 			if (keyboardState.IsKeyDown(Keys.Subtract))
@@ -114,6 +118,8 @@ namespace NBodySim
 			PreviousMouseState = mouseState;
 			PreviousKeyboardState = keyboardState;
 
+			if (AllowCollisions)
+				Bodies = Body.SimulateCollisions(Bodies);
 			Body.SimulateGravity(Bodies);
 			for (int i = 0; i < Bodies.Count; i++)
 				Bodies[i].Update();
