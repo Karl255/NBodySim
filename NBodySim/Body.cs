@@ -58,7 +58,7 @@ namespace NBodySim
 				var testBody = currentBody.Next;
 				bool testHasNext;
 				bool currentCollided = false;
-				LinkedList<Body> collidedBodies = new();
+				List<Body> collidedBodies = new(3);
 
 				do
 				{
@@ -67,7 +67,7 @@ namespace NBodySim
 						< currentBody.Value.Radius + testBody.Value.Radius)
 					{
 						anyCollisions = currentCollided = true;
-						collidedBodies.AddLast(testBody.Value);
+						collidedBodies.Add(testBody.Value);
 						bodies.Remove(testBody);
 
 					}
@@ -79,9 +79,9 @@ namespace NBodySim
 
 				if (currentCollided)
 				{
-					collidedBodies.AddLast(currentBody.Value);
+					collidedBodies.Add(currentBody.Value);
 
-					bodies.AddBefore(currentBody, CombineBodies(new(collidedBodies)));
+					bodies.AddBefore(currentBody, CombineBodies(collidedBodies));
 					bodies.Remove(currentBody);
 				}
 
@@ -106,18 +106,19 @@ namespace NBodySim
 			for (int i = 0; i < bodies.Count; i++)
 			{
 				newMass += bodies[i].Mass;
-				newRadius += bodies[i].Radius * bodies[i].Radius;
+				int rSq = bodies[i].Radius * bodies[i].Radius;
+				newRadius += rSq;
 				newPosition += bodies[i].Position * bodies[i].Mass;
 				newVelocity += bodies[i].Velocity * bodies[i].Mass;
-				rSum += bodies[i].Color.R * bodies[i].Radius;
-				gSum += bodies[i].Color.G * bodies[i].Radius;
-				bSum += bodies[i].Color.B * bodies[i].Radius;
+				rSum += bodies[i].Color.R * rSq;
+				gSum += bodies[i].Color.G * rSq;
+				bSum += bodies[i].Color.B * rSq;
 			}
 
+			Color newColor = new(rSum / newRadius, gSum / newRadius, bSum / newRadius);
 			newRadius = (int)Math.Round(Math.Sqrt(newRadius));
 			newPosition /= newMass;
 			newVelocity /= newMass;
-			Color newColor = new(rSum / newRadius, gSum / newRadius, bSum / newRadius);
 
 			return new(newPosition, newRadius, newMass, newColor, newVelocity);
 		}
