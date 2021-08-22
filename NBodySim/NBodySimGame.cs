@@ -23,7 +23,6 @@ namespace NBodySim
 		private bool AllowCollisions = false;
 		private int RadiusInput = 10; // +-1
 		private int MassInput = 1000; // +-10
-		private Color ColorInput = Color.Coral;
 		private float VelocityXInput = 0; // +-0.1f
 		private float VelocityYInput = 0; // +-0.1f
 
@@ -79,7 +78,7 @@ namespace NBodySim
 					Origin + (mouseState.Position.ToVector2() - ScreenSize / 2) * Scale,
 					RadiusInput,
 					MassInput,
-					ColorInput,
+					Util.GetRandomColor(),
 					new Vector2(VelocityXInput, VelocityYInput)));
 			}
 
