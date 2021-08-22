@@ -105,12 +105,12 @@ namespace NBodySim
 				newMass += bodies[i].Mass;
 				newRadius += bodies[i].Radius * bodies[i].Radius;
 				newPosition += bodies[i].Position * bodies[i].Mass;
-				newPosition += bodies[i].Velocity * bodies[i].Mass;
+				newVelocity += bodies[i].Velocity * bodies[i].Mass;
 			}
 
 			newRadius = (int)Math.Round(Math.Sqrt(newRadius));
-			newPosition /= bodies.Count * newMass;
-			newVelocity /= bodies.Count * newMass;
+			newPosition /= newMass;
+			newVelocity /= newMass;
 
 			Color newColor = bodies[0].Color; // TODO: mix all colors
 

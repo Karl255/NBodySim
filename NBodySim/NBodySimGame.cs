@@ -142,6 +142,7 @@ namespace NBodySim
 			SpriteBatch.DrawString(UIFont, $"Radius: {RadiusInput}",                          new(0, 3 * UIFont.LineSpacing), Color.White);
 			SpriteBatch.DrawString(UIFont, $"Mass: {MassInput}",                              new(0, 4 * UIFont.LineSpacing), Color.White);
 			SpriteBatch.DrawString(UIFont, $"Velocity: ({VelocityXInput}, {VelocityYInput})", new(0, 5 * UIFont.LineSpacing), Color.White);
+			SpriteBatch.DrawString(UIFont, $"Collisions: {(AllowCollisions ? "on" : "off")}", new(0, 6 * UIFont.LineSpacing), Color.White);
 
 			SpriteBatch.End();
 
