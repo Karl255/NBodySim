@@ -15,4 +15,5 @@ A simple 2d n-body gravity simulator made with MonoGame.
 - Page Up/Page Down: mass incrememnt/decrement (by 10)
 - Arrow keys: add 0.1 to velocity in that direction
 - C - toggle collisions (on by default)
+- P - pause simulation
 - R - remove all bodies

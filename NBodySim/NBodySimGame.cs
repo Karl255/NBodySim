@@ -21,6 +21,7 @@ namespace NBodySim
 		private List<Body> Bodies;
 
 		private bool AllowCollisions = true;
+		private bool IsPaused = true;
 		private int RadiusInput = 10; // +-1
 		private int MassInput = 1000; // +-10
 		private float VelocityXInput = 0; // +-0.1f
@@ -98,6 +99,10 @@ namespace NBodySim
 			if (keyboardState.IsKeyDown(Keys.C) && PreviousKeyboardState.IsKeyUp(Keys.C))
 				AllowCollisions = !AllowCollisions;
 
+			// P
+			if (keyboardState.IsKeyDown(Keys.P) && PreviousKeyboardState.IsKeyUp(Keys.P))
+				IsPaused = !IsPaused;
+
 			// R
 			if (keyboardState.IsKeyDown(Keys.R) && PreviousKeyboardState.IsKeyUp(Keys.R))
 			{
@@ -132,12 +137,15 @@ namespace NBodySim
 			PreviousMouseState = mouseState;
 			PreviousKeyboardState = keyboardState;
 
-			if (AllowCollisions)
-				Bodies = Body.SimulateCollisions(Bodies);
+			if (!IsPaused)
+			{
+				if (AllowCollisions)
+					Bodies = Body.SimulateCollisions(Bodies);
 
-			Body.SimulateGravity(Bodies);
-			for (int i = 0; i < Bodies.Count; i++)
-				Bodies[i].Update();
+				Body.SimulateGravity(Bodies);
+				for (int i = 0; i < Bodies.Count; i++)
+					Bodies[i].Update();
+			}
 
 			base.Update(gameTime);
 		}
@@ -160,6 +168,12 @@ namespace NBodySim
 			SpriteBatch.DrawString(UIFont, $"Mass: {MassInput}",                              new(0, row++ * UIFont.LineSpacing), Color.White);
 			SpriteBatch.DrawString(UIFont, $"Velocity: ({VelocityXInput}, {VelocityYInput})", new(0, row++ * UIFont.LineSpacing), Color.White);
 			SpriteBatch.DrawString(UIFont, $"Collisions: {(AllowCollisions ? "on" : "off")}", new(0, row++ * UIFont.LineSpacing), Color.White);
+
+			if (IsPaused)
+			{
+				string text = "Paused";
+				SpriteBatch.DrawString(UIFont, text, new(ScreenSize.X - UIFont.MeasureString(text).X, 0), Color.White);
+			}
 
 			SpriteBatch.End();
 
