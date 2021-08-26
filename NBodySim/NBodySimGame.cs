@@ -90,10 +90,7 @@ namespace NBodySim
 
 			// scroll
 			if (mouseState.ScrollWheelValue != PreviousMouseState.ScrollWheelValue)
-			{
-				int prevScale = Scale;
 				Scale = MathHelper.Max(1, Scale + (PreviousMouseState.ScrollWheelValue - mouseState.ScrollWheelValue) / 120);
-			}
 
 			// C
 			if (keyboardState.IsKeyDown(Keys.C) && PreviousKeyboardState.IsKeyUp(Keys.C))
@@ -156,8 +153,14 @@ namespace NBodySim
 
 			SpriteBatch.Begin();
 
+			int screenXStart = (int)Origin.X - (int)ScreenSize.X / 2 * Scale;
+			int screenYStart = (int)Origin.Y - (int)ScreenSize.Y / 2 * Scale;
+			int screenXEnd   = (int)Origin.X + (int)ScreenSize.X / 2 * Scale;
+			int screenYEnd   = (int)Origin.Y + (int)ScreenSize.Y / 2 * Scale;
+
 			for (int i = 0; i < Bodies.Count; i++)
-				Bodies[i].Draw(SpriteBatch, ScreenSize, Origin, Scale);
+				if (Bodies[i].IsVisible(screenXStart, screenXEnd, screenYStart, screenYEnd))
+					Bodies[i].Draw(SpriteBatch, ScreenSize, Origin, Scale);
 
 			int row = 0;
 			SpriteBatch.DrawString(UIFont, $"Position: ({Origin.X}, {Origin.Y})", new(0, row++ * UIFont.LineSpacing), Color.White);

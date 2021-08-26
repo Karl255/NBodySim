@@ -29,6 +29,10 @@ namespace NBodySim
 			Velocity = initialVelocity;
 		}
 
+		public bool IsVisible(int xStart, int xEnd, int yStart, int yEnd)
+			=> (Position.X + Radius > xStart && Position.X - Radius < xEnd)
+			&& (Position.Y + Radius > yStart && Position.Y - Radius < yEnd);
+
 		public void Draw(SpriteBatch spriteBatch, Vector2 screenSize, Vector2 origin, int scale) => spriteBatch.Draw(
 			Texture,
 			(-origin + Position - Center) / scale + screenSize / 2,
