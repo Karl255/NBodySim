@@ -76,15 +76,26 @@ namespace NBodySim
 			{
 				ButtonsTL = new[]
 				{
+					// collisions
+					new ButtonManager.Button(new(140, 4 * ls + 1), "c", () => AllowCollisions = !AllowCollisions),
+
+					// radius and mass
 					new ButtonManager.Button(new((int)(120 + 0.25 * size), 5 * ls + 1), "+", () => RadiusInput++),
 					new ButtonManager.Button(new((int)(120 + 1.50 * size), 5 * ls + 1), "-", () => RadiusInput = Math.Max(RadiusInput - 1, 1)),
 					new ButtonManager.Button(new((int)(120 + 0.25 * size), 6 * ls + 1), "+", () => MassInput += 100),
 					new ButtonManager.Button(new((int)(120 + 1.50 * size), 6 * ls + 1), "-", () => MassInput = Math.Max(MassInput - 100, 100)),
 
+					// velocity
 					new ButtonManager.Button(new((int)(1.75 * size), 10 * size), "-", () => VelocityYInput -= 0.1f),
 					new ButtonManager.Button(new((int)(0.75 * size), 11 * size), "-", () => VelocityXInput -= 0.1f),
 					new ButtonManager.Button(new((int)(2.75 * size), 11 * size), "+", () => VelocityXInput += 0.1f),
 					new ButtonManager.Button(new((int)(1.75 * size), 12 * size), "+", () => VelocityYInput += 0.1f),
+				},
+
+				ButtonsTR = new[]
+				{
+					new ButtonManager.Button(new(2, 2), "p", () => IsPaused = !IsPaused),
+					new ButtonManager.Button(new(2, 22), "r", ResetSimulation)
 				}
 			};
 		}
@@ -128,9 +139,7 @@ namespace NBodySim
 			// R
 			if (keyboardState.IsKeyDown(Keys.R) && PreviousKeyboardState.IsKeyUp(Keys.R))
 			{
-				Bodies.Clear();
-				Origin = new(0, 0);
-				Scale = 2;
+				ResetSimulation();
 			}
 
 			// +/-
@@ -207,12 +216,19 @@ namespace NBodySim
 			if (IsPaused)
 			{
 				string text = "Paused";
-				SpriteBatch.DrawString(UIFont, text, new(ScreenSize.X - UIFont.MeasureString(text).X, 0), Color.White);
+				SpriteBatch.DrawString(UIFont, text, new(ScreenSize.X - UIFont.MeasureString(text).X - 30, 1), Color.White);
 			}
 
 			SpriteBatch.End();
 
 			base.Draw(gameTime);
+		}
+
+		private void ResetSimulation()
+		{
+			Bodies.Clear();
+			Origin = new(0, 0);
+			Scale = 2;
 		}
 	}
 }

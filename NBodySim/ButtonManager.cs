@@ -10,6 +10,7 @@ namespace NBodySim
 
 		public const int Size = 17;
 		public Button[] ButtonsTL;
+		public Button[] ButtonsTR;
 		private Texture2D Texture;
 
 		public ButtonManager(Texture2D texture) => Texture = texture;
@@ -30,6 +31,16 @@ namespace NBodySim
 				}
 			}
 
+			for (int i= 0; i < ButtonsTR.Length; i++)
+			{
+				if (windowSize.X - position.X >= ButtonsTR[i].Offset.X && windowSize.X - position.X < ButtonsTR[i].Offset.X + Size &&
+					position.Y >= ButtonsTR[i].Offset.Y && position.Y < ButtonsTR[i].Offset.Y + Size)
+				{
+					ButtonsTR[i].Callback();
+					hit = true;
+				}
+			}
+
 			return hit;
 		}
 
@@ -44,6 +55,19 @@ namespace NBodySim
 					new(
 						ButtonsTL[i].Offset.X + Size / 2 - textWidth / 2,
 						ButtonsTL[i].Offset.Y -2
+					),
+					Color.White);
+			}
+
+			for (int i= 0; i < ButtonsTR.Length; i++)
+			{
+				spriteBatch.Draw(Texture, new Vector2(windowSize.X - ButtonsTR[i].Offset.X - Size, ButtonsTR[i].Offset.Y), Color.White);
+				int textWidth = (int)font.MeasureString(ButtonsTR[i].Text).X;
+				spriteBatch.DrawString(font,
+					ButtonsTR[i].Text,
+					new(
+						windowSize.X - ButtonsTR[i].Offset.X - Size / 2 - textWidth / 2,
+						ButtonsTR[i].Offset.Y -2
 					),
 					Color.White);
 			}
