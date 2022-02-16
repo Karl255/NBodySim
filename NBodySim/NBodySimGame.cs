@@ -108,8 +108,9 @@ namespace NBodySim
 				}
 			}
 
-			// right click
-			if (mouseState.RightButton == ButtonState.Pressed && PreviousMouseState.RightButton == ButtonState.Pressed)
+			// right click or middle click
+			if (mouseState.RightButton  == ButtonState.Pressed && PreviousMouseState.RightButton  == ButtonState.Pressed ||
+				mouseState.MiddleButton == ButtonState.Pressed && PreviousMouseState.MiddleButton == ButtonState.Pressed)
 				Origin += (PreviousMouseState.Position - mouseState.Position).ToVector2() * Scale;
 
 			// scroll

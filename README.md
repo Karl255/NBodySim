@@ -8,8 +8,9 @@ A simple 2d n-body gravity simulator made with MonoGame.
 - Cross-platform: supports Windows, Linux and MacOS.
 
 # Controls
+- the buttons on the screen
 - Left click: spawn a body with the specified parameters
-- Right click: pan
+- Right or middle click: pan
 - Scroll wheel: zoom
 - Numpad +/-: radius increment/decrement (by 1)
 - Page Up/Page Down: mass incrememnt/decrement (by 10)
