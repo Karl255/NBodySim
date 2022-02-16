@@ -129,7 +129,6 @@ namespace NBodySim
 
 		public static void SimulateGravity(List<Body> bodies)
 		{
-			// heavy <-> heavy
 			for (int i = 0; i < bodies.Count - 1; i++)
 			{
 				for (int j = i + 1; j < bodies.Count; j++)

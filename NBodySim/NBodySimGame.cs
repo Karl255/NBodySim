@@ -16,6 +16,8 @@ namespace NBodySim
 		private MouseState PreviousMouseState;
 		private KeyboardState PreviousKeyboardState;
 
+		private ButtonManager Buttons;
+
 		private Vector2 Origin = new();
 		private int Scale = 2;
 		private List<Body> Bodies;
@@ -52,12 +54,13 @@ namespace NBodySim
 
 			Util.GraphicsDevice = GraphicsDevice;
 
-			Bodies = new()
+			Bodies = new(256)
 			{
 				//new Body(new Vector2(0, 0), 20, 1000, Color.Yellow, new Vector2(0, 0.7f)),
 				//new Body(new Vector2(300, 0), 9, 500, Color.Red, new Vector2(0, -1.4f)),
 				//new Body(new Vector2(300, 50), 3, 1, Color.Blue, new Vector2(2.6f, -0.2f)),
 			};
+
 
 			base.Initialize();
 		}
@@ -66,6 +69,24 @@ namespace NBodySim
 		{
 			SpriteBatch = new SpriteBatch(GraphicsDevice);
 			UIFont = Content.Load<SpriteFont>("uiFont");
+
+			int ls = UIFont.LineSpacing;
+			int size = ButtonManager.Size;
+			Buttons = new(Content.Load<Texture2D>("button"))
+			{
+				ButtonsTL = new[]
+				{
+					new ButtonManager.Button(new((int)(120 + 0.25 * size), 5 * ls + 1), "+", () => RadiusInput++),
+					new ButtonManager.Button(new((int)(120 + 1.50 * size), 5 * ls + 1), "-", () => RadiusInput = Math.Max(RadiusInput - 1, 1)),
+					new ButtonManager.Button(new((int)(120 + 0.25 * size), 6 * ls + 1), "+", () => MassInput += 100),
+					new ButtonManager.Button(new((int)(120 + 1.50 * size), 6 * ls + 1), "-", () => MassInput = Math.Max(MassInput - 100, 100)),
+
+					new ButtonManager.Button(new((int)(1.75 * size), 10 * size), "-", () => VelocityYInput -= 0.1f),
+					new ButtonManager.Button(new((int)(0.75 * size), 11 * size), "-", () => VelocityXInput -= 0.1f),
+					new ButtonManager.Button(new((int)(2.75 * size), 11 * size), "+", () => VelocityXInput += 0.1f),
+					new ButtonManager.Button(new((int)(1.75 * size), 12 * size), "+", () => VelocityYInput += 0.1f),
+				}
+			};
 		}
 
 		protected override void Update(GameTime gameTime)
@@ -76,12 +97,15 @@ namespace NBodySim
 			// left click
 			if (mouseState.LeftButton == ButtonState.Pressed && PreviousMouseState.LeftButton == ButtonState.Released)
 			{
-				Bodies.Add(new(
-					Origin + (mouseState.Position.ToVector2() - ScreenSize / 2) * Scale,
-					RadiusInput,
-					MassInput,
-					Util.GetRandomColor(),
-					new Vector2(VelocityXInput, VelocityYInput)));
+				if (!Buttons.Click(mouseState.Position, Window.ClientBounds.Size))
+				{
+					Bodies.Add(new(
+						Origin + (mouseState.Position.ToVector2() - ScreenSize / 2) * Scale,
+						RadiusInput,
+						MassInput,
+						Util.GetRandomColor(),
+						new Vector2(VelocityXInput, VelocityYInput)));
+				}
 			}
 
 			// right click
@@ -105,6 +129,7 @@ namespace NBodySim
 			{
 				Bodies.Clear();
 				Origin = new(0, 0);
+				Scale = 2;
 			}
 
 			// +/-
@@ -115,16 +140,16 @@ namespace NBodySim
 
 			// page up/page down
 			if (keyboardState.IsKeyDown(Keys.PageUp))
-				MassInput += 10;
+				MassInput += 100;
 			if (keyboardState.IsKeyDown(Keys.PageDown))
-				MassInput = Math.Max(10, MassInput - 10);
+				MassInput = Math.Max(100, MassInput - 100);
 
 			// right/left
 			if (keyboardState.IsKeyDown(Keys.Right))
 				VelocityXInput += 0.1f;
 			if (keyboardState.IsKeyDown(Keys.Left))
 				VelocityXInput -= 0.1f;
-			
+
 			// up/down
 			if (keyboardState.IsKeyDown(Keys.Up))
 				VelocityYInput -= 0.1f;
@@ -158,20 +183,26 @@ namespace NBodySim
 			int screenXEnd   = (int)Origin.X + (int)ScreenSize.X / 2 * Scale;
 			int screenYEnd   = (int)Origin.Y + (int)ScreenSize.Y / 2 * Scale;
 
+			// bodies
 			for (int i = 0; i < Bodies.Count; i++)
 				if (Bodies[i].IsVisible(screenXStart, screenXEnd, screenYStart, screenYEnd))
 					Bodies[i].Draw(SpriteBatch, ScreenSize, Origin, Scale);
 
+			// texts
 			int row = 0;
-			SpriteBatch.DrawString(UIFont, $"Position: ({Origin.X}, {Origin.Y})", new(0, row++ * UIFont.LineSpacing), Color.White);
-			SpriteBatch.DrawString(UIFont, $"Body count: {Bodies.Count}",         new(0, row++ * UIFont.LineSpacing), Color.White);
+			SpriteBatch.DrawString(UIFont, $"Position: ({Origin.X}, {Origin.Y})",                     new(0, row++ * UIFont.LineSpacing), Color.White);
+			SpriteBatch.DrawString(UIFont, $"Body count: {Bodies.Count}",                             new(0, row++ * UIFont.LineSpacing), Color.White);
 			row++;
-			SpriteBatch.DrawString(UIFont, "Input values:",                                   new(0, row++ * UIFont.LineSpacing), Color.White);
-			SpriteBatch.DrawString(UIFont, $"Radius: {RadiusInput}",                          new(0, row++ * UIFont.LineSpacing), Color.White);
-			SpriteBatch.DrawString(UIFont, $"Mass: {MassInput}",                              new(0, row++ * UIFont.LineSpacing), Color.White);
-			SpriteBatch.DrawString(UIFont, $"Velocity: ({VelocityXInput}, {VelocityYInput})", new(0, row++ * UIFont.LineSpacing), Color.White);
-			SpriteBatch.DrawString(UIFont, $"Collisions: {(AllowCollisions ? "on" : "off")}", new(0, row++ * UIFont.LineSpacing), Color.White);
+			SpriteBatch.DrawString(UIFont, "Input values:",                                           new(0, row++ * UIFont.LineSpacing), Color.White);
+			SpriteBatch.DrawString(UIFont, $"Collisions: {(AllowCollisions ? "on" : "off")}",         new(0, row++ * UIFont.LineSpacing), Color.White);
+			SpriteBatch.DrawString(UIFont, $"Radius: {RadiusInput}",                                  new(0, row++ * UIFont.LineSpacing), Color.White);
+			SpriteBatch.DrawString(UIFont, $"Mass: {MassInput}",                                      new(0, row++ * UIFont.LineSpacing), Color.White);
+			SpriteBatch.DrawString(UIFont, $"Velocity: ({VelocityXInput:0.0}, {VelocityYInput:0.0})", new(0, row++ * UIFont.LineSpacing), Color.White);
 
+			// buttons
+			Buttons.Draw(SpriteBatch, UIFont, Window.ClientBounds.Size.ToVector2());
+
+			// status
 			if (IsPaused)
 			{
 				string text = "Paused";
